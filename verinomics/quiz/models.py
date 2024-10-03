@@ -2,7 +2,15 @@ from django.db import models
 from ckeditor.fields import RichTextField
 
 
+class Category(models.Model):
+    title = models.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return self.title
+
+
 class Question(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.PROTECT)
     question_source = models.CharField(max_length=255)
     question_text = RichTextField()
     explanation = RichTextField()
