@@ -7,6 +7,7 @@ name = "pypi"
 django-ckeditor-5 = "*"
 python-dotenv = "*"
 django-ckeditor = "*"
+djangorestframework = "*"
 
 [dev-packages]
 
