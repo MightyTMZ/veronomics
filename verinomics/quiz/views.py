@@ -5,7 +5,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models.functions import Random
 from rest_framework.response import Response
 from rest_framework.views import APIView
-import random
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from .models import *
 from .serializers import *
 
@@ -24,6 +25,14 @@ class CategorySearch(generics.ListAPIView):
     serializer_class = QuestionSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
     search_fields = ['category__title']
+
+
+class ListOfCategories(generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = SimpleCategorySerializer
+    @method_decorator(cache_page(60 * 60 * 2))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
 
 class RandomQuestionView(APIView):

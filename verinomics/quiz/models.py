@@ -10,7 +10,7 @@ class Category(models.Model):
 
 
 class Question(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.PROTECT)
+    category = models.ManyToManyField(Category)
     question_source = models.CharField(max_length=255)
     question_text = RichTextField()
     explanation = RichTextField()
