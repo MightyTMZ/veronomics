@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Quiz.css";
+import QuestionFilterComponent from "./QuestionFilterComponent";
 
 interface Option {
   option_text: string;
@@ -67,6 +68,7 @@ const Quiz: React.FC = () => {
   return (
     <div className="container mt-5 afacad-flux">
       <h1 className="text-center mb-4">[Name of App here]</h1>
+      <QuestionFilterComponent/>
       {question ? (
         <div className="card shadow-sm border-light p-4">
           <h2
