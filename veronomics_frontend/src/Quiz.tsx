@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Quiz.css";
-import QuestionFilterComponent from "./QuestionFilterComponent";
 
 interface Option {
   option_text: string;
@@ -9,7 +8,6 @@ interface Option {
 }
 
 interface Category {
-  id: number;
   title: string;
 }
 
@@ -24,47 +22,90 @@ interface Question {
 }
 
 const Quiz: React.FC = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("");
+  // const [questions, setQuestions] = useState<Question[]>([]);
+  const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
   const [question, setQuestion] = useState<Question | null>(null);
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [feedback, setFeedback] = useState<string>("");
   const [showExplanation, setShowExplanation] = useState<boolean>(false);
 
-  let q_difficulty = "";
-  let dynamic_color = "";
-
-  switch (question?.difficulty) {
-    case "E":
-      q_difficulty = "Easy";
-      dynamic_color = "green";
-      break;
-    case "M":
-      q_difficulty = "Medium";
-      dynamic_color = "#ffae42";
-
-      break;
-
-    case "H":
-      q_difficulty = "Hard";
-      dynamic_color = "#8B0000"
-      break;
-    default:
-      q_difficulty = "Unknown difficulty";
-      dynamic_color = "#000"
-
-  }
+  console.log(filteredQuestions);
 
   useEffect(() => {
-    fetchQuestion();
+    fetchCategories();
   }, []);
 
-  const fetchQuestion = async () => {
-    const response = await axios.get(
-      "http://127.0.0.1:8000/quiz/questions/pick-one-random/"
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(
+        "http://127.0.0.1:8000/quiz/categories/"
+      );
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const fetchQuestionsByCategory = async (category: string) => {
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:8000/quiz/questions/list-all/?search=${category}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        `Error fetching questions for category ${category}:`,
+        error
+      );
+      return [];
+    }
+  };
+
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const category = event.target.value;
+
+    if (selectedCategories.includes(category)) {
+      setSelectedCategories(
+        selectedCategories.filter((cat) => cat !== category)
+      );
+    } else {
+      setSelectedCategories([...selectedCategories, category]);
+    }
+  };
+
+  const handleDifficultyChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setSelectedDifficulty(event.target.value);
+  };
+
+  const handleFilterQuestions = async () => {
+    let allQuestions: Question[] = [];
+    for (const category of selectedCategories) {
+      const questionsForCategory = await fetchQuestionsByCategory(category);
+      allQuestions = [...allQuestions, ...questionsForCategory];
+    }
+
+    // Filter by difficulty
+    const difficultyFilteredQuestions = allQuestions.filter(
+      (question) =>
+        !selectedDifficulty || question.difficulty === selectedDifficulty
     );
-    setQuestion(response.data);
-    setSelectedOption("");
-    setFeedback("");
-    setShowExplanation(false);
+
+    setFilteredQuestions(difficultyFilteredQuestions);
+
+    // Pick a random question
+    if (difficultyFilteredQuestions.length > 0) {
+      const randomIndex = Math.floor(
+        Math.random() * difficultyFilteredQuestions.length
+      );
+      setQuestion(difficultyFilteredQuestions[randomIndex]);
+    } else {
+      setQuestion(null);
+    }
   };
 
   const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,8 +120,7 @@ const Quiz: React.FC = () => {
         setFeedback("Correct!");
       } else {
         setFeedback(
-          "Incorrect. The correct answer is:" +
-            "<hr/>" +
+          "Incorrect. The correct answer is: " +
             "<strong>" +
             correctOption?.option_text +
             "</strong>"
@@ -91,22 +131,68 @@ const Quiz: React.FC = () => {
   };
 
   const handleNextQuestion = () => {
-    fetchQuestion();
+    setSelectedOption("");
+    setFeedback("");
+    setShowExplanation(false);
+    handleFilterQuestions(); // Fetch a new random question
   };
 
   return (
     <div className="container mt-5 afacad-flux">
-      <h1 className="text-center mb-4">[Name of App here]</h1>
-      <QuestionFilterComponent />
+      <h1 className="text-center mb-4" style={{ letterSpacing: "3px", fontWeight: 'bold' }}>EconChamp</h1>
+      <div className="container mt-5">
+        {/* Filter Display */}
+        <div className="filter-container mb-4 border rounded p-3 bg-light">
+
+          {/* Dynamic Categories */}
+          <div className="category-dropdown mb-3">
+            <h2 >Category:</h2>
+            <div className="category-grid">
+              {categories.map((category, index) => (
+                <label key={index} className="category">
+                  <input
+                    type="checkbox"
+                    value={category.title}
+                    checked={selectedCategories.includes(category.title)}
+                    onChange={handleCategoryChange}
+                  />
+                  {category.title}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Difficulty Filter */}
+          <div className="mb-3">
+            <label htmlFor="difficultySelect" className="form-label">
+              <h2>Difficulty:</h2>
+            </label>
+            <select
+              id="difficultySelect"
+              value={selectedDifficulty}
+              onChange={handleDifficultyChange}
+              className="form-select"
+            >
+              <option value="">All Difficulties</option>
+              <option value="E">Easy</option>
+              <option value="M">Medium</option>
+              <option value="H">Hard</option>
+            </select>
+          </div>
+
+          <button className="btn btn-primary" onClick={handleFilterQuestions}>
+            Give me practice!
+          </button>
+        </div>
+      </div>
+
+      {/* Display Question */}
       {question ? (
         <div className="card shadow-sm border-light p-4">
           <h2
             className="card-title mb-4"
             dangerouslySetInnerHTML={{ __html: question.question_text }}
           />
-          <p style={{ color: dynamic_color, fontWeight: "bold" }}>
-            <span style={{ color: "black", fontWeight: 'normal'}}>Difficulty: </span>{q_difficulty}
-          </p>
           <form onSubmit={handleSubmit}>
             {question.options.map((option, index) => (
               <div className="form-check mb-2" key={index}>
@@ -160,7 +246,7 @@ const Quiz: React.FC = () => {
         </div>
       ) : (
         <div className="text-center">
-          <p>Loading question...</p>
+          <p>No questions found or loading...</p>
         </div>
       )}
     </div>

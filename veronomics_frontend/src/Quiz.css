@@ -1,7 +1,9 @@
-/* src/Quiz.css */
-
 body {
   background-color: #f8f9fa; /* Light background for contrast */
+}
+
+.category {
+  margin-right: 16px;
 }
 
 .container {
@@ -33,4 +35,8 @@ body {
   font-optical-sizing: auto;
   font-style: normal;
   font-variation-settings: "slnt" 0;
+}
+
+.filter-container {
+    font-size: 24px;
 }
