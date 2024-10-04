@@ -27,6 +27,17 @@ class CategorySearch(generics.ListAPIView):
     search_fields = ['category__title']
 
 
+# http://127.0.0.1:8000/quiz/questions/difficulty/?search=e --> Easy questions
+# http://127.0.0.1:8000/quiz/questions/difficulty/?search=m --> Medium questions
+# http://127.0.0.1:8000/quiz/questions/difficulty/?search=h --> Hard questions
+
+class DifficultySearch(generics.ListAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ['difficulty']
+
+
 class ListOfCategories(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = SimpleCategorySerializer

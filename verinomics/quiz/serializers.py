@@ -22,7 +22,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ["id", "question_source", 'category', 'question_text', 'options','explanation']
+        fields = ["id", "question_source", 'category', 'question_text', 'options','explanation', 'difficulty']
 
         # ID field will be used for users to report an issue with a question
 

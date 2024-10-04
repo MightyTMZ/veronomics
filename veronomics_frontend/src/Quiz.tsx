@@ -20,6 +20,7 @@ interface Question {
   question_text: string;
   options: Option[];
   explanation: string;
+  difficulty: string;
 }
 
 const Quiz: React.FC = () => {
@@ -27,6 +28,30 @@ const Quiz: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [feedback, setFeedback] = useState<string>("");
   const [showExplanation, setShowExplanation] = useState<boolean>(false);
+
+  let q_difficulty = "";
+  let dynamic_color = "";
+
+  switch (question?.difficulty) {
+    case "E":
+      q_difficulty = "Easy";
+      dynamic_color = "green";
+      break;
+    case "M":
+      q_difficulty = "Medium";
+      dynamic_color = "#ffae42";
+
+      break;
+
+    case "H":
+      q_difficulty = "Hard";
+      dynamic_color = "#8B0000"
+      break;
+    default:
+      q_difficulty = "Unknown difficulty";
+      dynamic_color = "#000"
+
+  }
 
   useEffect(() => {
     fetchQuestion();
@@ -54,7 +79,11 @@ const Quiz: React.FC = () => {
         setFeedback("Correct!");
       } else {
         setFeedback(
-          "Incorrect. The correct answer is:" + "<hr/>" + "<strong>" + correctOption?.option_text + "</strong>"
+          "Incorrect. The correct answer is:" +
+            "<hr/>" +
+            "<strong>" +
+            correctOption?.option_text +
+            "</strong>"
         );
       }
       setShowExplanation(true);
@@ -68,13 +97,16 @@ const Quiz: React.FC = () => {
   return (
     <div className="container mt-5 afacad-flux">
       <h1 className="text-center mb-4">[Name of App here]</h1>
-      <QuestionFilterComponent/>
+      <QuestionFilterComponent />
       {question ? (
         <div className="card shadow-sm border-light p-4">
           <h2
             className="card-title mb-4"
             dangerouslySetInnerHTML={{ __html: question.question_text }}
           />
+          <p style={{ color: dynamic_color, fontWeight: "bold" }}>
+            <span style={{ color: "black", fontWeight: 'normal'}}>Difficulty: </span>{q_difficulty}
+          </p>
           <form onSubmit={handleSubmit}>
             {question.options.map((option, index) => (
               <div className="form-check mb-2" key={index}>
