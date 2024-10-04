@@ -28,31 +28,24 @@ const QuestionFilterComponent: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("");
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      const response = await axios.get("http://127.0.0.1:8000/quiz/questions/");
-      setQuestions(response.data);
-      setFilteredQuestions(response.data);
-    };
-
-    fetchQuestions();
-  }, []);
-
   const handleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const category = event.target.value;
 
     if (selectedCategories.includes(category)) {
-      // Remove category if already selected
-      setSelectedCategories(selectedCategories.filter((cat) => cat !== category));
+      setSelectedCategories(
+        selectedCategories.filter((cat) => cat !== category)
+      );
+      console.log(selectedCategories);
     } else {
-      // Add category if not already selected
       setSelectedCategories([...selectedCategories, category]);
     }
 
     filterQuestions(selectedCategories, selectedDifficulty);
   };
 
-  const handleDifficultyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleDifficultyChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const difficulty = event.target.value;
     setSelectedDifficulty(difficulty);
     filterQuestions(selectedCategories, difficulty);
@@ -61,8 +54,12 @@ const QuestionFilterComponent: React.FC = () => {
   const filterQuestions = (categories: string[], difficulty: string) => {
     const filtered = questions.filter((question) => {
       const categoryMatch =
-        categories.length > 0 ? categories.includes(question.category.title) : true;
-      const difficultyMatch = difficulty ? question.difficulty === difficulty : true; // Assuming questions have a difficulty property
+        categories.length > 0
+          ? categories.includes(question.category.title)
+          : true;
+      const difficultyMatch = difficulty
+        ? question.difficulty === difficulty
+        : true; // Assuming questions have a difficulty property
       return categoryMatch && difficultyMatch;
     });
 
@@ -72,7 +69,7 @@ const QuestionFilterComponent: React.FC = () => {
   return (
     <div className="container mt-5">
       <h1 className="text-center mb-4">Economics Quiz</h1>
-      
+
       {/* Filter Display */}
       <div className="filter-container mb-4 border rounded p-3 bg-light">
         <h3>Filter Questions</h3>
@@ -120,32 +117,31 @@ const QuestionFilterComponent: React.FC = () => {
             <label className="category">
               <input
                 type="checkbox"
-                value="Macroeconomics"
-                checked={selectedCategories.includes("Macroeconomics")}
+                value="Public Economics"
+                checked={selectedCategories.includes("Public Economics")}
                 onChange={handleCategoryChange}
               />
-              Macroeconomics
+              Public Economics
             </label>
             <label className="category">
               <input
                 type="checkbox"
-                value="Macroeconomics"
-                checked={selectedCategories.includes("Macroeconomics")}
+                value="Accounting"
+                checked={selectedCategories.includes("Accounting")}
                 onChange={handleCategoryChange}
               />
-              Macroeconomics
+              Accounting
             </label>
             <label className="category">
               <input
                 type="checkbox"
-                value="Macroeconomics"
-                checked={selectedCategories.includes("Macroeconomics")}
+                value="International"
+                checked={selectedCategories.includes("International")}
                 onChange={handleCategoryChange}
               />
-              Macroeconomics
+              International
             </label>
-            
-            
+
             {/* Add more categories as needed */}
           </div>
         </div>

@@ -10,10 +10,19 @@ class Category(models.Model):
 
 
 class Question(models.Model):
+
+    QUESTION_DIFFICULTY = [
+        ('E', "Easy"),
+        ('M', "Medium"),
+        ('H', "Hard"),
+    ]
+
+
     category = models.ManyToManyField(Category)
     question_source = models.CharField(max_length=255)
     question_text = RichTextField()
     explanation = RichTextField()
+    difficulty = models.CharField(max_length=1, choices=QUESTION_DIFFICULTY, default="M")
 
     def __str__(self) -> str:
         return f"{self.id} - {self.question_source}"
