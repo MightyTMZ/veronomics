@@ -11,7 +11,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class OptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
-        fields = "__all__"
+        fields = ['option_text', 'correct']
 
 
 
@@ -22,4 +22,6 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ["question_source", 'category', 'question_text', 'options','explanation']
+        fields = ["id", "question_source", 'category', 'question_text', 'options','explanation']
+
+        # ID field will be used for users to report an issue with a question
