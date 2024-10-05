@@ -32,7 +32,7 @@ const Quiz: React.FC = () => {
   const [feedback, setFeedback] = useState<string>("");
   const [showExplanation, setShowExplanation] = useState<boolean>(false);
 
-  const backendServerAddress = "https://econchamp.pythonanywhere.com";
+  const backendServerAddress = "https://quiztrepreneur.pythonanywhere.com";
 
   console.log(filteredQuestions);
 
