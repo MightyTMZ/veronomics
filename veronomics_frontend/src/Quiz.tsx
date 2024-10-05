@@ -32,6 +32,8 @@ const Quiz: React.FC = () => {
   const [feedback, setFeedback] = useState<string>("");
   const [showExplanation, setShowExplanation] = useState<boolean>(false);
 
+  const backendServerAddress = "https://econchamp.pythonanywhere.com";
+
   console.log(filteredQuestions);
 
   useEffect(() => {
@@ -41,7 +43,7 @@ const Quiz: React.FC = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/quiz/categories/"
+        `${backendServerAddress}/quiz/categories/`
       );
       setCategories(response.data);
     } catch (error) {
@@ -52,7 +54,7 @@ const Quiz: React.FC = () => {
   const fetchQuestionsByCategory = async (category: string) => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/quiz/questions/list-all/?search=${category}`
+        `${backendServerAddress}/quiz/questions/list-all/?search=${category}`
       );
       return response.data;
     } catch (error) {
